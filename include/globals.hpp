@@ -1,0 +1,3 @@
+#define MATRIX_WIDTH 10
+#define MATRIX_HEIGHT 20
+#define TILE_SIZE 36

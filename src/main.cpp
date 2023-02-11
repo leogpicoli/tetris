@@ -1,83 +1,67 @@
 #include <iostream>
 #include <SDL2/SDL.h>
-#include <vector>
+#include <array>
 #include <color.hpp>
 #include <pos.hpp>
+#include <tetrisMap.hpp>
+#include <tetrimino.hpp>
 
 using namespace std;
 
-const int WIDTH = 800, HEIGHT = 600;
+const int WIDTH = 360, HEIGHT = 720;
+bool running;
 
-// class Mino {
-//     private:
-//         Color color;
-// };
+SDL_Renderer *renderer;
+SDL_Window *window;
 
-// class Tetromino {
-//     private:
+TetrisMap tetrisMap;
+int bla = 0;
 
-// };
+void render() {
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+    tetrisMap.draw(renderer);
+    std::cout << bla++ << std::endl;
+    SDL_RenderPresent(renderer);
+}
 
-int main(int argc, char *argv[])
-{
-    Pos p(10, 11);
-    Pos p2(3, 2);
-    Color red = Color(255, 0, 0, 0);
-    cout << "(" << p2.row() << ", " << p2.col() << ")" << endl;
-    // SDL_Window* window = NULL;
+void input(){
+    SDL_Event event;
+    while(SDL_PollEvent(&event)){
+        if(event.type == SDL_QUIT) running=false;
+        if (event.key.state == SDL_PRESSED) {
+            switch (event.key.keysym.sym) {
+                case SDLK_z: tetrisMap.tetriminoAction(ROTATE_LEFT);
+                break;
+                case SDLK_x: tetrisMap.tetriminoAction(ROTATE_LEFT);
+                break;
+                case SDLK_LEFT: tetrisMap.tetriminoAction(MOVE_LEFT);
+                break;
+                case SDLK_RIGHT: tetrisMap.tetriminoAction(MOVE_RIGHT);
+                break;
+                case SDLK_UP: tetrisMap.tetriminoAction(MOVE_UP);
+                break;
+                case SDLK_DOWN: tetrisMap.tetriminoAction(MOVE_DOWN);
+                break;
+            }
+        }
+    }
+}
 
-    // SDL_Init(SDL_INIT_VIDEO);
-    // window = SDL_CreateWindow(
-    //     "An SDL Window",
-    //     SDL_WINDOWPOS_UNDEFINED,
-    //     SDL_WINDOWPOS_UNDEFINED,
-    //     640,
-    //     480,
-    //     SDL_WINDOW_OPENGL
-    // );
+int main(int argc, char *argv[]){
+    running = true;
+    SDL_Init(SDL_INIT_EVERYTHING);
+    SDL_CreateWindowAndRenderer(WIDTH, HEIGHT, 0, &window, &renderer);
+    SDL_SetWindowTitle(window, "Tetris");
 
-    // if (window == NULL) {
-    //     cout << "deu pau" << endl;
-    //     return 1;
-    // }
+    while(running){
+        input();
+        render();
+    }
 
-    // SDL_Renderer *renderer = NULL;
-    // renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-
-    // SDL_Rect rect;
-
-    // rect.x = 200;
-    // rect.y = 200;
-    // rect.h = 50;
-    // rect.w = 50;
-
-    // // Infinite loop for application
-    // bool gameIsRunning = true;
-    // while (gameIsRunning) {
-    //     SDL_Event event;
-    //     int x, y;
-    //     SDL_GetMouseState(&x, &y);
-
-    //     while(SDL_PollEvent(&event)) {
-    //         if (event.type == SDL_QUIT) {
-    //             gameIsRunning = false;
-    //         }
-    //     }
-
-    //     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-    //     SDL_RenderClear(renderer);
-
-    //     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-    //     rect.x = x - 25;
-    //     rect.y = y - 25;
-    //     SDL_RenderDrawRect(renderer, &rect);
-
-    //     SDL_RenderPresent(renderer);
-    // }
-
-    // SDL_DestroyWindow(window);
-
-    // SDL_Quit();
-
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
     return 0;
 }

@@ -2,9 +2,10 @@
 #define TETRIS_TETRIMINO_HPP
 
 #include <color.hpp>
+#include <array>
 #include <pos.hpp>
-#include <matrix.hpp>
 #include <map>
+#include <SDL2/SDL.h>
 
 using namespace std;
 
@@ -16,34 +17,106 @@ enum Orientation
     E // 3
 };
 
+enum TetriminoAction 
+{
+    MOVE_LEFT,
+    MOVE_RIGHT,
+    MOVE_DOWN,
+    MOVE_UP,
+    ROTATE_LEFT,
+    ROTATE_RIGHT,
+};
+
 class Tetrimino
 {
 public:
-    Tetrimino(Matrix &matrix);
-    // Direction of rotation: -1 counter clockwise and 1 for clockwise
-    void rotate(int direction);
+    Tetrimino();
 
-    void moveLeft();
-    void moveRight();
-    void moveDown();
-    void moveUp();
+    // Rotates tetrimino using rot, and rotationPoint (number from 1 to 5)
+    void rotateAction(TetriminoAction rot, int rotationPoint);
 
-    virtual bool tryMovementCollides() = 0;
-    virtual map<Orientation, map<int, Pos>> getRotationMap() = 0;
+    // Moves tetrimino using mov
+    void moveAction(TetriminoAction mov);
 
-    void applyTryMovement();
-    void beginTryMovement();
+    // Undoes last movement or rotation
+    void undoPreviousAction();
 
+    // Returns minos positions
+    virtual array<Pos, 4> getMinos() = 0;
+
+    Pos &pos();
+    const Pos &pos() const;
+
+    // Draw tetrimino using SDL_Renderer
+    void draw(SDL_Renderer *renderer);
 protected:
     Pos m_pos;
-    Pos m_try_pos;
+    Pos prev_pos;
 
     Orientation m_orientation; // 0 for East, 1 for North, 2 for West, 3 for South
-    Orientation m_try_orientation;
+    Orientation prev_orientation;
 
     Color m_color;
 
-    Matrix &m_matrix;
+    // Returns rotation map
+    virtual map<Orientation, map<int, Pos>> getRotationMap() = 0;
+};
+
+
+class TetriminoI : public Tetrimino
+{
+public:
+    TetriminoI();
+    virtual array<Pos, 4> getMinos();
+    virtual map<Orientation, map<int, Pos>> getRotationMap();
+};
+
+class TetriminoJ : public Tetrimino
+{
+public:
+    TetriminoJ();
+    virtual array<Pos, 4> getMinos();
+    virtual map<Orientation, map<int, Pos>> getRotationMap();
+};
+
+class TetriminoL : public Tetrimino
+{
+public:
+    TetriminoL();
+    virtual array<Pos, 4> getMinos();
+    virtual map<Orientation, map<int, Pos>> getRotationMap();
+};
+
+class TetriminoO : public Tetrimino
+{
+public:
+    TetriminoO();
+    virtual array<Pos, 4> getMinos();
+    virtual map<Orientation, map<int, Pos>> getRotationMap();
+};
+
+class TetriminoS : public Tetrimino
+{
+public:
+    TetriminoS();
+    virtual array<Pos, 4> getMinos();
+    virtual map<Orientation, map<int, Pos>> getRotationMap();
+};
+
+class TetriminoT : public Tetrimino
+{
+public:
+    TetriminoT();
+    virtual array<Pos, 4> getMinos();
+    virtual map<Orientation, map<int, Pos>> getRotationMap();
+};
+
+class TetriminoZ : public Tetrimino
+{
+public:
+    TetriminoZ();
+    virtual array<Pos, 4> getMinos();
+    virtual map<Orientation, map<int, Pos>> getRotationMap();
 };
 
 #endif

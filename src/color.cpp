@@ -10,9 +10,9 @@ Color::Color(uint8_t red, uint8_t blue, uint8_t green, uint8_t alpha)
 
 Color::Color(uint32_t hex)
 {
-    m_red = (uint8_t)(hex & 0xFF000000 >> 24);
-    m_blue = (uint8_t)(hex & 0x00FF0000 >> 16);
-    m_green = (uint8_t)(hex & 0x0000FF00 >> 8);
+    m_red = (uint8_t)((hex & 0xFF000000) >> 24);
+    m_green = (uint8_t)((hex & 0x00FF0000) >> 16);
+    m_blue = (uint8_t)((hex & 0x0000FF00) >> 8);
     m_alpha = (uint8_t)(hex & 0x000000FF);
 }
 
@@ -50,4 +50,37 @@ void Color::set(uint8_t red, uint8_t blue, uint8_t green, uint8_t alpha)
     m_blue = blue;
     m_green = green;
     m_alpha = alpha;
+}
+
+Color Color::fromTetrimino(char c)
+{
+    switch (c)
+    {
+    case 'O':
+        return YELLOW;
+        break;
+    case 'I':
+        return CYAN;
+        break;
+    case 'T':
+        return PURPLE;
+        break;
+    case 'L':
+        return ORANGE;
+        break;
+    case 'J':
+        return BLUE;
+        break;
+    case 'S':
+        return GREEN;
+        break;
+    case 'Z':
+        return RED;
+        break;
+    default:
+        return BLACK;
+        break;
+    }
+
+    return BLACK;
 }
