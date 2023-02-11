@@ -10,30 +10,37 @@ Tetrimino::Tetrimino()
 
 TetriminoI::TetriminoI() : Tetrimino(){
     m_color = CYAN;
+    t_name = 'I';
 };
 
 TetriminoJ::TetriminoJ() : Tetrimino(){
     m_color = BLUE;
+    t_name = 'J';
 };
 
 TetriminoL::TetriminoL() : Tetrimino(){
     m_color = ORANGE;
+    t_name = 'L';
 };
 
 TetriminoO::TetriminoO() : Tetrimino(){
     m_color = YELLOW;
+    t_name = 'O';
 };
 
 TetriminoT::TetriminoT() : Tetrimino(){
     m_color = PURPLE;
+    t_name = 'T';
 };
 
 TetriminoS::TetriminoS() : Tetrimino(){
     m_color = GREEN;
+    t_name = 'S';
 };
 
 TetriminoZ::TetriminoZ() : Tetrimino(){
     m_color = RED;
+    t_name = 'Z';
 };
 
 
@@ -108,6 +115,7 @@ void Tetrimino::draw(SDL_Renderer *renderer) {
 
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 150);
         SDL_RenderDrawRect(renderer, &rect);
+
     }
 }
 
@@ -143,7 +151,7 @@ array<Pos, 4> TetriminoJ::getMinos()
     break;
     case W:
     {
-        minos[0] = Pos(0, 0);
+        minos[0] = Pos(0, 1);
         minos[1] = Pos(1, 1);
         minos[2] = Pos(2, 0);
         minos[3] = Pos(2, 1);
@@ -319,7 +327,7 @@ array<Pos, 4> TetriminoS::getMinos()
     break;
     case W:
     {
-        minos[0] = Pos(0, 0);
+        minos[0] = Pos(0, 1);
         minos[1] = Pos(1, 1);
         minos[2] = Pos(2, 0);
         minos[3] = Pos(2, 1);
@@ -410,7 +418,7 @@ array<Pos, 4> TetriminoZ::getMinos()
         minos[0] = Pos(0, 1);
         minos[1] = Pos(1, 0);
         minos[2] = Pos(1, 1);
-        minos[3] = Pos(1, 2);
+        minos[3] = Pos(2, 0);
     }
     break;
     default:

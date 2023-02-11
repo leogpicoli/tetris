@@ -13,8 +13,13 @@ public:
     char at(Pos pos);
     char at(int row, int col);
     void draw(SDL_Renderer *renderer);
-
     void tetriminoAction(TetriminoAction action);
+
+    // Automatically goes down
+    void goDown(TetriminoAction mov);
+    // Draw dead tetrimino
+    void drawDeadTetrimino(SDL_Renderer *renderer);
+
 private:
     // Matrix Height + 2 (Skyline) + 2 (Top wall) + 2 (Bottom wall)
     // Matrix Width + 2 (Left wall) + 2 (Right wall)

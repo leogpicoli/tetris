@@ -15,14 +15,14 @@ SDL_Renderer *renderer;
 SDL_Window *window;
 
 TetrisMap tetrisMap;
-int bla = 0;
 
 void render() {
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
     tetrisMap.draw(renderer);
-    std::cout << bla++ << std::endl;
+    tetrisMap.goDown(MOVE_DOWN);
+    tetrisMap.drawDeadTetrimino(renderer);
     SDL_RenderPresent(renderer);
 }
 
@@ -34,7 +34,7 @@ void input(){
             switch (event.key.keysym.sym) {
                 case SDLK_z: tetrisMap.tetriminoAction(ROTATE_LEFT);
                 break;
-                case SDLK_x: tetrisMap.tetriminoAction(ROTATE_LEFT);
+                case SDLK_x: tetrisMap.tetriminoAction(ROTATE_RIGHT);
                 break;
                 case SDLK_LEFT: tetrisMap.tetriminoAction(MOVE_LEFT);
                 break;

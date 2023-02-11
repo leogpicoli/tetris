@@ -3,6 +3,8 @@
 #include <color.hpp>
 #include <SDL2/SDL.h>
 #include <iostream>
+#include <tetrimino.hpp>
+#include <globals.hpp>
 
 TetrisMap::TetrisMap()
 {
@@ -37,9 +39,7 @@ TetrisMap::TetrisMap()
             }
         }
     }
-
-    tetrimino = new TetriminoI();
-    tetriminoAction(MOVE_LEFT);
+    tetrimino = new TetriminoJ();
 }
 
 char TetrisMap::at(int row, int col)
@@ -90,6 +90,57 @@ void TetrisMap::tetriminoAction(TetriminoAction action) {
             // If it is a valid rotation, stop the for that tests each rotation point.
             if (validateTetriminoAction()) break;
         }
+    }
+}
+
+bool dead = false;
+void TetrisMap::drawDeadTetrimino(SDL_Renderer *renderer)
+{
+    Pos t_pos;
+    array<Pos, 4> minos = tetrimino->getMinos();
+    if(dead){
+        for(int i = 0; i < 4; i++){
+            t_pos = minos[i];
+            m_matrix[tetrimino->pos().row() + 4 + t_pos.row()][tetrimino->pos().col() + 2 + t_pos.col()] = tetrimino->t_name;
+        }
+        tetrimino->draw(renderer);  
+        int index = rand()%7;
+        if (index == 1){
+            tetrimino = new TetriminoI();
+        }
+        if (index == 2){
+            tetrimino = new TetriminoO();
+        }
+        if (index == 3){
+            tetrimino = new TetriminoT();
+        }
+        if (index == 4){
+            tetrimino = new TetriminoL();
+        }
+        if (index == 5){
+            tetrimino = new TetriminoJ();
+        }
+        if (index == 6){
+            tetrimino = new TetriminoZ();
+        }
+        if (index == 7){
+            tetrimino = new TetriminoS();
+        }
+        dead = false;
+    }
+}
+
+int t_speed = 500; // milliseconds
+int t_down_time = t_speed;
+void TetrisMap::goDown(TetriminoAction mov)
+{
+    if (SDL_GetTicks() > t_down_time){
+        t_down_time += t_speed;
+        tetrimino->moveAction(MOVE_DOWN);
+        if(!validateTetriminoAction()){
+            dead = true;
+        }
+        validateTetriminoAction();
     }
 }
 

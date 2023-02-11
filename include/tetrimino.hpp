@@ -49,6 +49,9 @@ public:
 
     // Draw tetrimino using SDL_Renderer
     void draw(SDL_Renderer *renderer);
+
+    char t_name;
+
 protected:
     Pos m_pos;
     Pos prev_pos;
