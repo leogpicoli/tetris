@@ -5,25 +5,29 @@
 #include <pos.hpp>
 #include <tetrisMap.hpp>
 #include <tetrimino.hpp>
+#include <ctime>
+#include <cstdlib>
 
 using namespace std;
 
-const int WIDTH = 360, HEIGHT = 720;
+
 bool running;
 
 SDL_Renderer *renderer;
 SDL_Window *window;
 
-TetrisMap tetrisMap;
+TetrisMap *tetrisMap;
 
 void render() {
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
-    tetrisMap.draw(renderer);
-    tetrisMap.goDown(MOVE_DOWN);
-    tetrisMap.drawDeadTetrimino(renderer);
+    tetrisMap->draw(renderer);
     SDL_RenderPresent(renderer);
+}
+
+void physics() {
+    tetrisMap->tick();
 }
 
 void input(){
@@ -32,17 +36,17 @@ void input(){
         if(event.type == SDL_QUIT) running=false;
         if (event.key.state == SDL_PRESSED) {
             switch (event.key.keysym.sym) {
-                case SDLK_z: tetrisMap.tetriminoAction(ROTATE_LEFT);
+                case SDLK_z: tetrisMap->tetriminoAction(ROTATE_LEFT);
                 break;
-                case SDLK_x: tetrisMap.tetriminoAction(ROTATE_RIGHT);
+                case SDLK_x: tetrisMap->tetriminoAction(ROTATE_RIGHT);
                 break;
-                case SDLK_LEFT: tetrisMap.tetriminoAction(MOVE_LEFT);
+                case SDLK_LEFT: tetrisMap->tetriminoAction(MOVE_LEFT);
                 break;
-                case SDLK_RIGHT: tetrisMap.tetriminoAction(MOVE_RIGHT);
+                case SDLK_RIGHT: tetrisMap->tetriminoAction(MOVE_RIGHT);
                 break;
-                case SDLK_UP: tetrisMap.tetriminoAction(MOVE_UP);
+                case SDLK_UP: tetrisMap->tetriminoAction(ROTATE_RIGHT);
                 break;
-                case SDLK_DOWN: tetrisMap.tetriminoAction(MOVE_DOWN);
+                case SDLK_DOWN: tetrisMap->tetriminoAction(MOVE_DOWN);
                 break;
             }
         }
@@ -50,13 +54,18 @@ void input(){
 }
 
 int main(int argc, char *argv[]){
+    srand((unsigned) time(NULL));
+
+    tetrisMap = new TetrisMap();
     running = true;
+
     SDL_Init(SDL_INIT_EVERYTHING);
-    SDL_CreateWindowAndRenderer(WIDTH, HEIGHT, 0, &window, &renderer);
+    SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);
     SDL_SetWindowTitle(window, "Tetris");
 
     while(running){
         input();
+        physics();
         render();
     }
 

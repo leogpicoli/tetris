@@ -47,12 +47,20 @@ public:
     Pos &pos();
     const Pos &pos() const;
 
+    char &name();
+    const char &name() const;
+
+    void setDead();
+
     // Draw tetrimino using SDL_Renderer
     void draw(SDL_Renderer *renderer);
 
-    char t_name;
+
+    static Tetrimino* generateTetriminoFrom(char c);
 
 protected:
+    char t_name;
+
     Pos m_pos;
     Pos prev_pos;
 
@@ -60,6 +68,7 @@ protected:
     Orientation prev_orientation;
 
     Color m_color;
+    bool dead;
 
     // Returns rotation map
     virtual map<Orientation, map<int, Pos>> getRotationMap() = 0;

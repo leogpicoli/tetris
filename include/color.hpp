@@ -22,6 +22,7 @@ public:
     uint8_t getGreen();
     uint8_t getBlue();
     uint8_t getAlpha();
+    void setAlpha(uint8_t alpha);
     void set(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha);
 
     static Color fromTetrimino(char c);

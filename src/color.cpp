@@ -52,6 +52,10 @@ void Color::set(uint8_t red, uint8_t blue, uint8_t green, uint8_t alpha)
     m_alpha = alpha;
 }
 
+void Color::setAlpha(uint8_t alpha) {
+    m_alpha = alpha;
+}
+
 Color Color::fromTetrimino(char c)
 {
     switch (c)
