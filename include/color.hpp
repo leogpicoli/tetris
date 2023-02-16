@@ -9,6 +9,7 @@
 #define CYAN Color(0x00FFFFFF)
 #define ORANGE Color(0xFF7F00FF)
 #define BLACK Color(0x000000FF)
+#define WHITE_TRANSPARENT Color(0xFFFFFF30);
 
 #include <stdint.h>
 

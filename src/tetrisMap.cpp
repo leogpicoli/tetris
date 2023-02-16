@@ -93,12 +93,19 @@ void TetrisMap::draw(SDL_Renderer *renderer)
             m.draw(renderer, row, col);
         }
     }
+
+    drawGhostMinos(renderer);
 }
 
 void TetrisMap::tetriminoAction(TetriminoAction action)
 {
     // Move action
-    if (action == MOVE_DOWN || action == MOVE_RIGHT || action == MOVE_LEFT || action == MOVE_UP)
+    if (action == DROP) 
+    {
+        while (validateTetriminoAction()) tetrimino->moveAction(MOVE_DOWN);
+        lockTetrimino();
+        phase = PATTERN_PHASE;
+    } else if (action == MOVE_DOWN || action == MOVE_RIGHT || action == MOVE_LEFT || action == MOVE_UP)
     {
         tetrimino->moveAction(action);
         validateTetriminoAction();
@@ -288,6 +295,36 @@ bool TetrisMap::validateTetriminoAction()
         lockDownTimer = SDL_GetTicks();
     // If there was no collision, the movement was validated.
     return !collides;
+}
+
+void TetrisMap::drawGhostMinos(SDL_Renderer *renderer){
+    array<Pos, 4> posMino = tetrimino->getMinos();
+    Pos posGhostTetrimino = tetrimino->pos();
+
+    bool collision = false;
+    int count = 0;
+    
+    while(!collision){
+        posGhostTetrimino.row() += 1;
+
+        for(int i = 0; i < 4; i++){
+            Pos pos = posMino[i] + posGhostTetrimino;
+
+            if(at(pos).value() != 0){
+                collision = true;
+                break;
+            }
+            count +=1;
+        }
+    }
+
+    posGhostTetrimino.row() -= 1;
+
+    for(int i = 0; i < 4; i++ ){
+        Pos posToPaint = posGhostTetrimino + posMino[i];
+        Mino minoToPaint ('G'); // G for ghost
+        minoToPaint.draw(renderer, posToPaint.row(), posToPaint.col());
+    }
 }
 
 void TetrisMap::initTetriminoQueue()

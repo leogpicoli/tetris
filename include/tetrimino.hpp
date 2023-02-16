@@ -25,6 +25,7 @@ enum TetriminoAction
     MOVE_UP,
     ROTATE_LEFT,
     ROTATE_RIGHT,
+    DROP,
 };
 
 class Tetrimino

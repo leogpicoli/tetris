@@ -81,6 +81,9 @@ Color Color::fromTetrimino(char c)
     case 'Z':
         return RED;
         break;
+    case 'G':
+        return WHITE_TRANSPARENT;
+        break;
     default:
         return BLACK;
         break;

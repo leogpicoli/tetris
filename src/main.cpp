@@ -48,6 +48,8 @@ void input(){
                 break;
                 case SDLK_DOWN: tetrisMap->tetriminoAction(MOVE_DOWN);
                 break;
+                case SDLK_SPACE: tetrisMap->tetriminoAction(DROP);
+                break;
             }
         }
     }

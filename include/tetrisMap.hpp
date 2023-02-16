@@ -29,7 +29,6 @@ public:
     void draw(SDL_Renderer *renderer);
     void tetriminoAction(TetriminoAction action);
 
-
     // Tick
     void tick();
 
@@ -59,6 +58,8 @@ private:
     bool validateTetriminoAction();
     void initTetriminoQueue();
     bool canFall();
+    void drawGhostMinos(SDL_Renderer *renderer);
+    
     int lockDownTimer;
 };
 
