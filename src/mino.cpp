@@ -34,21 +34,21 @@ const Color &Mino::color() const
     return m_color;
 }
 
-void Mino::draw(SDL_Renderer *renderer, int row, int col)
+void Mino::draw(SDL_Renderer *renderer, int x, int y)
 {      
     if (m_value == 0) return;
     
     SDL_Rect rect;
-    rect.x = col * TILE_SIZE + 5;
-    rect.y = row * TILE_SIZE + 5;
+    rect.x = x + 5;
+    rect.y = y + 5;
     rect.w = TILE_SIZE - 5;
     rect.h = TILE_SIZE - 5;
 
     SDL_SetRenderDrawColor(renderer, m_color.getRed(), m_color.getGreen(), m_color.getBlue(), m_color.getAlpha() * (1 - animationProgress));
     SDL_RenderFillRect(renderer, &rect);
 
-    rect.x = col * TILE_SIZE;
-    rect.y = row * TILE_SIZE;
+    rect.x = x;
+    rect.y = y;
     rect.w = TILE_SIZE;
     rect.h = TILE_SIZE;
 
@@ -57,7 +57,7 @@ void Mino::draw(SDL_Renderer *renderer, int row, int col)
 }
 
 void Mino::incrementAnimationProgress() {
-    animationProgress += 0.005;
+    animationProgress += 0.01;
 }
 
 bool Mino::animationEnded() {

@@ -36,13 +36,15 @@ public:
 
     void generateNextTetrimino();
 
+    void changeHold();
+
     void copyRow(int row_source, int row_destiny);
 private:
     // Matrix Height + 2 (Skyline) + 2 (Top wall) + 2 (Bottom wall)
     // Matrix Width + 2 (Left wall) + 2 (Right wall)
     // char can be: O, I, T, L, J, S, Z, W (for wall)
     Mino m_matrix[MATRIX_HEIGHT + 2 + 2 + 2][MATRIX_WIDTH + 2 + 2];
-    // Tetrim
+    
     Tetrimino *tetrimino;
 
     int fall_speed = 500; // milliseconds
@@ -54,11 +56,16 @@ private:
     vector<char> virtualBag = {'I', 'O', 'T', 'L', 'J', 'Z', 'S'};
     vector<Tetrimino*> tetriminoQueue;
 
+    Tetrimino* tetriminoHold = nullptr;
+    bool canChangeHold = true;
+
     // Undoes tetriminoAction if it is colliding with something, returns true if it was validated.
     bool validateTetriminoAction();
     void initTetriminoQueue();
     bool canFall();
     void drawGhostMinos(SDL_Renderer *renderer);
+    void drawQueueTetriminos(SDL_Renderer *renderer);
+    void drawTetriminoHold(SDL_Renderer *renderer);
     
     int lockDownTimer;
 };

@@ -75,12 +75,24 @@ void TetrisMap::draw(SDL_Renderer *renderer)
 
     for (auto row = 0; row < MATRIX_HEIGHT; row++)
     {
-        SDL_RenderDrawLine(renderer, 0, row * TILE_SIZE, WINDOW_WIDTH, row * TILE_SIZE);
+        SDL_RenderDrawLine(
+            renderer, 
+            TETRIS_MAP_INIT_X, 
+            row * TILE_SIZE + TETRIS_MAP_INIT_Y, 
+            TETRIS_MAP_WIDTH + TETRIS_MAP_INIT_X, 
+            row * TILE_SIZE + TETRIS_MAP_INIT_Y
+        );
     }
 
-    for (auto col = 0; col < MATRIX_WIDTH; col++)
+    for (auto col = 0; col <= MATRIX_WIDTH; col++)
     {
-        SDL_RenderDrawLine(renderer, col * TILE_SIZE, 0, col * TILE_SIZE, WINDOW_HEIGHT);
+        SDL_RenderDrawLine(
+            renderer, 
+            TETRIS_MAP_INIT_X + col * TILE_SIZE, 
+            TETRIS_MAP_INIT_Y, 
+            col * TILE_SIZE + TETRIS_MAP_INIT_X, 
+            TETRIS_MAP_HEIGHT + TETRIS_MAP_INIT_Y
+        );
     }
 
     tetrimino->draw(renderer);
@@ -90,11 +102,17 @@ void TetrisMap::draw(SDL_Renderer *renderer)
         for (auto col = 0; col < MATRIX_WIDTH; col++)
         {   
             Mino m = at(row, col);
-            m.draw(renderer, row, col);
+            int x = col * TILE_SIZE + TETRIS_MAP_INIT_X;
+            int y = row * TILE_SIZE + TETRIS_MAP_INIT_Y;
+            m.draw(renderer, x, y);
         }
     }
+    
+    if (phase == FALLING_PHASE) drawGhostMinos(renderer);
 
-    drawGhostMinos(renderer);
+    drawQueueTetriminos(renderer);
+
+    drawTetriminoHold(renderer);
 }
 
 void TetrisMap::tetriminoAction(TetriminoAction action)
@@ -161,6 +179,8 @@ void TetrisMap::tick()
     if (phase == GENERATION_PHASE)
     {
         generateNextTetrimino();
+
+        canChangeHold = true;
         phase = FALLING_PHASE;
         t_down_time = SDL_GetTicks();
     }
@@ -323,7 +343,44 @@ void TetrisMap::drawGhostMinos(SDL_Renderer *renderer){
     for(int i = 0; i < 4; i++ ){
         Pos posToPaint = posGhostTetrimino + posMino[i];
         Mino minoToPaint ('G'); // G for ghost
-        minoToPaint.draw(renderer, posToPaint.row(), posToPaint.col());
+    
+        int x = posToPaint.col() * TILE_SIZE + TETRIS_MAP_INIT_X;
+        int y = posToPaint.row() * TILE_SIZE + TETRIS_MAP_INIT_Y;
+
+        minoToPaint.draw(renderer, x, y);
+    }
+}
+
+void TetrisMap::drawTetriminoHold(SDL_Renderer *renderer) {
+    if (tetriminoHold) {
+        int x = TETRIS_MAP_MARGIN;
+        int y = TETRIS_MAP_MARGIN;
+        tetriminoHold->draw(renderer, x, y);
+    }
+}
+
+void TetrisMap::changeHold() {
+    if (canChangeHold) {
+        if (tetriminoHold) {
+            Tetrimino *aux = tetrimino;
+            tetrimino = tetriminoHold;
+            tetriminoHold = aux;
+            tetrimino->reset();
+        } else {
+            tetriminoHold = tetrimino;
+            generateNextTetrimino();
+        }
+        
+        t_down_time = SDL_GetTicks();
+        canChangeHold = false;
+    }
+}
+
+void TetrisMap::drawQueueTetriminos(SDL_Renderer *renderer) {
+    int x = TETRIS_MAP_INIT_X + TETRIS_MAP_WIDTH + TETRIS_MAP_MARGIN;
+    for (int i = 0;i < 4;i++) {
+        Tetrimino * t = tetriminoQueue[i];
+        t->draw(renderer, x, TETRIS_MAP_MARGIN + TETRIMINO_QUEUE_MARGIN*i);
     }
 }
 

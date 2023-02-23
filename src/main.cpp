@@ -40,6 +40,8 @@ void input(){
                 break;
                 case SDLK_x: tetrisMap->tetriminoAction(ROTATE_RIGHT);
                 break;
+                case SDLK_c: tetrisMap->changeHold();
+                break;
                 case SDLK_LEFT: tetrisMap->tetriminoAction(MOVE_LEFT);
                 break;
                 case SDLK_RIGHT: tetrisMap->tetriminoAction(MOVE_RIGHT);

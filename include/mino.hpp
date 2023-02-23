@@ -21,7 +21,7 @@ public:
     const Color &color() const;
     char &value();
     const char &value() const;
-    void draw(SDL_Renderer *renderer, int row, int col);
+    void draw(SDL_Renderer *renderer, int x, int y);
     void incrementAnimationProgress();
     bool animationEnded();
 };

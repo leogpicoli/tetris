@@ -42,6 +42,9 @@ public:
     // Undoes last movement or rotation
     void undoPreviousAction();
 
+    // Reset tetriminos position and orientation
+    void reset();
+
     // Returns minos positions
     virtual array<Pos, 4> getMinos() = 0;
 
@@ -56,6 +59,7 @@ public:
     // Draw tetrimino using SDL_Renderer
     void draw(SDL_Renderer *renderer);
 
+    void draw(SDL_Renderer *renderer, int x, int y);
 
     static Tetrimino* generateTetriminoFrom(char c);
 
