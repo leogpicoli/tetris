@@ -47,7 +47,10 @@ private:
     
     Tetrimino *tetrimino;
 
-    int fall_speed = 500; // milliseconds
+    int lines_cleared = 0;
+    int level = 0;
+    int score = 0;
+    int fall_speed = 1000; // milliseconds
     int t_down_time = fall_speed;
 
     TetrisPhase phase;
@@ -66,6 +69,7 @@ private:
     void drawGhostMinos(SDL_Renderer *renderer);
     void drawQueueTetriminos(SDL_Renderer *renderer);
     void drawTetriminoHold(SDL_Renderer *renderer);
+    void updateGameStatus(int nbLinesCleared);
     
     int lockDownTimer;
 };

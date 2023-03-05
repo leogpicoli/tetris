@@ -47,8 +47,10 @@ public:
 
     // Returns minos positions
     virtual array<Pos, 4> getMinos() = 0;
+    virtual int getSize() = 0;
 
     Pos &pos();
+
     const Pos &pos() const;
 
     char &name();
@@ -86,6 +88,7 @@ public:
     TetriminoI();
     virtual array<Pos, 4> getMinos();
     virtual map<Orientation, map<int, Pos>> getRotationMap();
+    virtual int getSize();
 };
 
 class TetriminoJ : public Tetrimino
@@ -94,6 +97,7 @@ public:
     TetriminoJ();
     virtual array<Pos, 4> getMinos();
     virtual map<Orientation, map<int, Pos>> getRotationMap();
+    virtual int getSize();
 };
 
 class TetriminoL : public Tetrimino
@@ -102,6 +106,7 @@ public:
     TetriminoL();
     virtual array<Pos, 4> getMinos();
     virtual map<Orientation, map<int, Pos>> getRotationMap();
+    virtual int getSize();
 };
 
 class TetriminoO : public Tetrimino
@@ -110,6 +115,7 @@ public:
     TetriminoO();
     virtual array<Pos, 4> getMinos();
     virtual map<Orientation, map<int, Pos>> getRotationMap();
+    virtual int getSize();
 };
 
 class TetriminoS : public Tetrimino
@@ -118,6 +124,7 @@ public:
     TetriminoS();
     virtual array<Pos, 4> getMinos();
     virtual map<Orientation, map<int, Pos>> getRotationMap();
+    virtual int getSize();
 };
 
 class TetriminoT : public Tetrimino
@@ -126,6 +133,7 @@ public:
     TetriminoT();
     virtual array<Pos, 4> getMinos();
     virtual map<Orientation, map<int, Pos>> getRotationMap();
+    virtual int getSize();
 };
 
 class TetriminoZ : public Tetrimino
@@ -134,6 +142,7 @@ public:
     TetriminoZ();
     virtual array<Pos, 4> getMinos();
     virtual map<Orientation, map<int, Pos>> getRotationMap();
+    virtual int getSize();
 };
 
 #endif

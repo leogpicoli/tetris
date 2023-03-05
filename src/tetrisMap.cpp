@@ -5,6 +5,7 @@
 #include <iostream>
 #include <tetrimino.hpp>
 #include <globals.hpp>
+#include <cmath>
 
 TetrisMap::TetrisMap()
 {
@@ -76,23 +77,21 @@ void TetrisMap::draw(SDL_Renderer *renderer)
     for (auto row = 0; row < MATRIX_HEIGHT; row++)
     {
         SDL_RenderDrawLine(
-            renderer, 
-            TETRIS_MAP_INIT_X, 
-            row * TILE_SIZE + TETRIS_MAP_INIT_Y, 
-            TETRIS_MAP_WIDTH + TETRIS_MAP_INIT_X, 
-            row * TILE_SIZE + TETRIS_MAP_INIT_Y
-        );
+            renderer,
+            TETRIS_MAP_INIT_X,
+            row * TILE_SIZE + TETRIS_MAP_INIT_Y,
+            TETRIS_MAP_WIDTH + TETRIS_MAP_INIT_X,
+            row * TILE_SIZE + TETRIS_MAP_INIT_Y);
     }
 
     for (auto col = 0; col <= MATRIX_WIDTH; col++)
     {
         SDL_RenderDrawLine(
-            renderer, 
-            TETRIS_MAP_INIT_X + col * TILE_SIZE, 
-            TETRIS_MAP_INIT_Y, 
-            col * TILE_SIZE + TETRIS_MAP_INIT_X, 
-            TETRIS_MAP_HEIGHT + TETRIS_MAP_INIT_Y
-        );
+            renderer,
+            TETRIS_MAP_INIT_X + col * TILE_SIZE,
+            TETRIS_MAP_INIT_Y,
+            col * TILE_SIZE + TETRIS_MAP_INIT_X,
+            TETRIS_MAP_HEIGHT + TETRIS_MAP_INIT_Y);
     }
 
     tetrimino->draw(renderer);
@@ -100,15 +99,16 @@ void TetrisMap::draw(SDL_Renderer *renderer)
     for (auto row = 0; row < MATRIX_HEIGHT; row++)
     {
         for (auto col = 0; col < MATRIX_WIDTH; col++)
-        {   
+        {
             Mino m = at(row, col);
             int x = col * TILE_SIZE + TETRIS_MAP_INIT_X;
             int y = row * TILE_SIZE + TETRIS_MAP_INIT_Y;
             m.draw(renderer, x, y);
         }
     }
-    
-    if (phase == FALLING_PHASE) drawGhostMinos(renderer);
+
+    if (phase == FALLING_PHASE)
+        drawGhostMinos(renderer);
 
     drawQueueTetriminos(renderer);
 
@@ -118,15 +118,21 @@ void TetrisMap::draw(SDL_Renderer *renderer)
 void TetrisMap::tetriminoAction(TetriminoAction action)
 {
     // Move action
-    if (action == DROP) 
+    if (action == DROP)
     {
-        while (validateTetriminoAction()) tetrimino->moveAction(MOVE_DOWN);
+        while (validateTetriminoAction())
+        {
+            tetrimino->moveAction(MOVE_DOWN);
+            score += 2;
+        }
         lockTetrimino();
         phase = PATTERN_PHASE;
-    } else if (action == MOVE_DOWN || action == MOVE_RIGHT || action == MOVE_LEFT || action == MOVE_UP)
+    }
+    else if (action == MOVE_DOWN || action == MOVE_RIGHT || action == MOVE_LEFT || action == MOVE_UP)
     {
         tetrimino->moveAction(action);
-        validateTetriminoAction();
+        bool val = validateTetriminoAction();
+        if (val && action == MOVE_DOWN) score += 1;
     }
     else
     { // Rotate action
@@ -235,9 +241,14 @@ void TetrisMap::tick()
         }
 
         if (rowsDestroyed.empty())
+        {
             phase = GENERATION_PHASE;
+        }
         else
+        {
+            updateGameStatus(rowsDestroyed.size());
             phase = ANIMATION_PHASE;
+        }
     }
 
     if (phase == ANIMATION_PHASE)
@@ -250,7 +261,7 @@ void TetrisMap::tick()
                 Mino m = at(row, col);
 
                 m.incrementAnimationProgress();
-                
+
                 set(row, col, m);
 
                 if (m.animationEnded())
@@ -258,14 +269,17 @@ void TetrisMap::tick()
                     phase = ELIMINATE_PHASE;
                     Mino empty;
                     set(row, col, empty);
-                }	
+                }
             }
         }
     }
-    if (phase == ELIMINATE_PHASE){
-        for (int i = 0; i < rowsDestroyed.size(); i++){
-            for (int j = rowsDestroyed[i]; j >= 0; j--){
-                copyRow(j, j-1);
+    if (phase == ELIMINATE_PHASE)
+    {
+        for (int i = 0; i < rowsDestroyed.size(); i++)
+        {
+            for (int j = rowsDestroyed[i]; j >= 0; j--)
+            {
+                copyRow(j, j - 1);
             }
         }
 
@@ -273,11 +287,45 @@ void TetrisMap::tick()
     }
 }
 
+void TetrisMap::updateGameStatus(int nbLinesCleared)
+{
+    // Update score
+    switch (nbLinesCleared)
+    {
+    case 1:
+        score += 100 * level;
+        break;
+    case 2:
+        score += 300 * level;
+        break;
+    case 3:
+        score += 500 * level;
+        break;
+    case 4:
+        score += 800 * level;
+        break;
+    default:
+        break;
+    }
+
+    // Update number of lines cleared
+    lines_cleared += nbLinesCleared;
+
+    // Update level
+    level = lines_cleared / 10 + 1;
+
+    // Update fall speed
+    fall_speed = 1000 * pow(0.8 - (level - 1) * 0.007, level - 1);
+
+    cout << score << endl;
+}
+
 void TetrisMap::copyRow(int row_dest, int row_source)
 {
-    for (int i = 0; i < MATRIX_WIDTH; i++){
-        Mino source = at(row_source,i);
-        set(row_dest,i,source);
+    for (int i = 0; i < MATRIX_WIDTH; i++)
+    {
+        Mino source = at(row_source, i);
+        set(row_dest, i, source);
     }
 }
 
@@ -317,33 +365,38 @@ bool TetrisMap::validateTetriminoAction()
     return !collides;
 }
 
-void TetrisMap::drawGhostMinos(SDL_Renderer *renderer){
+void TetrisMap::drawGhostMinos(SDL_Renderer *renderer)
+{
     array<Pos, 4> posMino = tetrimino->getMinos();
     Pos posGhostTetrimino = tetrimino->pos();
 
     bool collision = false;
     int count = 0;
-    
-    while(!collision){
+
+    while (!collision)
+    {
         posGhostTetrimino.row() += 1;
 
-        for(int i = 0; i < 4; i++){
+        for (int i = 0; i < 4; i++)
+        {
             Pos pos = posMino[i] + posGhostTetrimino;
 
-            if(at(pos).value() != 0){
+            if (at(pos).value() != 0)
+            {
                 collision = true;
                 break;
             }
-            count +=1;
+            count += 1;
         }
     }
 
     posGhostTetrimino.row() -= 1;
 
-    for(int i = 0; i < 4; i++ ){
+    for (int i = 0; i < 4; i++)
+    {
         Pos posToPaint = posGhostTetrimino + posMino[i];
-        Mino minoToPaint ('G'); // G for ghost
-    
+        Mino minoToPaint('G'); // G for ghost
+
         int x = posToPaint.col() * TILE_SIZE + TETRIS_MAP_INIT_X;
         int y = posToPaint.row() * TILE_SIZE + TETRIS_MAP_INIT_Y;
 
@@ -351,36 +404,47 @@ void TetrisMap::drawGhostMinos(SDL_Renderer *renderer){
     }
 }
 
-void TetrisMap::drawTetriminoHold(SDL_Renderer *renderer) {
-    if (tetriminoHold) {
-        int x = TETRIS_MAP_MARGIN;
+void TetrisMap::drawTetriminoHold(SDL_Renderer *renderer)
+{
+    if (tetriminoHold)
+    {
+        int x = (TETRIS_MAP_INIT_X - (tetriminoHold->getSize() * TILE_SIZE)) / 2;
         int y = TETRIS_MAP_MARGIN;
         tetriminoHold->draw(renderer, x, y);
     }
 }
 
-void TetrisMap::changeHold() {
-    if (canChangeHold) {
-        if (tetriminoHold) {
+void TetrisMap::changeHold()
+{
+    if (canChangeHold)
+    {
+        if (tetriminoHold)
+        {
             Tetrimino *aux = tetrimino;
             tetrimino = tetriminoHold;
             tetriminoHold = aux;
+            tetriminoHold->reset();
             tetrimino->reset();
-        } else {
+        }
+        else
+        {
             tetriminoHold = tetrimino;
             generateNextTetrimino();
         }
-        
+
         t_down_time = SDL_GetTicks();
         canChangeHold = false;
     }
 }
 
-void TetrisMap::drawQueueTetriminos(SDL_Renderer *renderer) {
-    int x = TETRIS_MAP_INIT_X + TETRIS_MAP_WIDTH + TETRIS_MAP_MARGIN;
-    for (int i = 0;i < 4;i++) {
-        Tetrimino * t = tetriminoQueue[i];
-        t->draw(renderer, x, TETRIS_MAP_MARGIN + TETRIMINO_QUEUE_MARGIN*i);
+void TetrisMap::drawQueueTetriminos(SDL_Renderer *renderer)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        Tetrimino *t = tetriminoQueue[i];
+        int x = TETRIS_MAP_INIT_X + TETRIS_MAP_WIDTH + (TETRIS_MAP_INIT_X - (t->getSize() * TILE_SIZE)) / 2;
+        int y = TETRIS_MAP_MARGIN + TETRIMINO_QUEUE_MARGIN * i;
+        t->draw(renderer, x, y);
     }
 }
 

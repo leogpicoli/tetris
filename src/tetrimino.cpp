@@ -334,34 +334,34 @@ array<Pos, 4> TetriminoO::getMinos()
     {
     case N:
     {
-        minos[0] = Pos(0, 1);
-        minos[1] = Pos(0, 2);
-        minos[2] = Pos(1, 1);
-        minos[3] = Pos(1, 2);
+        minos[0] = Pos(0, 0);
+        minos[1] = Pos(0, 1);
+        minos[2] = Pos(1, 0);
+        minos[3] = Pos(1, 1);
     }
     break;
     case E:
     {
-        minos[0] = Pos(0, 1);
-        minos[1] = Pos(0, 2);
-        minos[2] = Pos(1, 1);
-        minos[3] = Pos(1, 2);
+        minos[0] = Pos(0, 0);
+        minos[1] = Pos(0, 1);
+        minos[2] = Pos(1, 0);
+        minos[3] = Pos(1, 1);
     }
     break;
     case S:
     {
-        minos[0] = Pos(0, 1);
-        minos[1] = Pos(0, 2);
-        minos[2] = Pos(1, 1);
-        minos[3] = Pos(1, 2);
+        minos[0] = Pos(0, 0);
+        minos[1] = Pos(0, 1);
+        minos[2] = Pos(1, 0);
+        minos[3] = Pos(1, 1);
     }
     break;
     case W:
     {
-        minos[0] = Pos(0, 1);
-        minos[1] = Pos(0, 2);
-        minos[2] = Pos(1, 1);
-        minos[3] = Pos(1, 2);
+        minos[0] = Pos(0, 0);
+        minos[1] = Pos(0, 1);
+        minos[2] = Pos(1, 0);
+        minos[3] = Pos(1, 1);
     }
     break;
     default:
@@ -501,6 +501,34 @@ array<Pos, 4> TetriminoZ::getMinos()
     }
 
     return minos;
+}
+
+int TetriminoI::getSize() {
+    return 4;
+}
+
+int TetriminoJ::getSize() {
+    return 3;
+}
+
+int TetriminoL::getSize() {
+    return 3;
+}
+
+int TetriminoO::getSize() {
+    return 2;
+}
+
+int TetriminoS::getSize() {
+    return 3;
+}
+
+int TetriminoZ::getSize() {
+    return 3;
+}
+
+int TetriminoT::getSize() {
+    return 3;
 }
 
 map<Orientation, map<int, Pos>> TetriminoI::getRotationMap()
