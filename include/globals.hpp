@@ -20,4 +20,4 @@
         'I', 'O', 'T', 'L', 'J', 'Z', 'S' \
     }
 
-#define ANIMATION_PROGRESS 0.03
+#define ANIMATION_PROGRESS 0.1

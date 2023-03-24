@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.ejs": "html",
         "ostream": "cpp",
         "array": "cpp",
         "atomic": "cpp",
@@ -49,6 +50,7 @@
         "compare": "cpp",
         "concepts": "cpp",
         "numbers": "cpp",
-        "ctime": "cpp"
+        "ctime": "cpp",
+        "chrono": "cpp"
     }
 }

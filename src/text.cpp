@@ -8,7 +8,7 @@ Text::Text()
     else
         std::cout << "TTF font ready to go!" << std::endl;
 
-    this->font = TTF_OpenFont("./fonts/RobotoMono-Regular.ttf", 28);
+    this->font = TTF_OpenFont("./fonts/RobotoMono-Regular.ttf", 24);
 
     if (this->font == nullptr)
     {
@@ -17,7 +17,7 @@ Text::Text()
     }
 }
 
-void Text::draw(int x, int y, string text, SDL_Renderer *renderer)
+void Text::drawStart(int x, int y, string text, SDL_Renderer *renderer)
 {
     SDL_Surface *surfaceText = TTF_RenderText_Solid(font, text.data(), {255, 255, 255});
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surfaceText);
@@ -27,7 +27,18 @@ void Text::draw(int x, int y, string text, SDL_Renderer *renderer)
     SDL_DestroyTexture(texture);
 }
 
-void Text::drawCentered(int startX, int startY, int endX, int endY, string text, SDL_Renderer *renderer)
+void Text::drawEnd(int x, int y, string text, SDL_Renderer *renderer)
+{
+    SDL_Surface *surfaceText = TTF_RenderText_Solid(font, text.data(), {255, 255, 255});
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surfaceText);
+    int new_x = x - surfaceText->w;
+    SDL_Rect textRect{new_x, y, surfaceText->w, surfaceText->h};
+    SDL_RenderCopy(renderer, texture, NULL, &textRect);
+    SDL_FreeSurface(surfaceText);
+    SDL_DestroyTexture(texture);
+}
+
+void Text::drawCenter(int startX, int startY, int endX, int endY, string text, SDL_Renderer *renderer)
 {
     SDL_Surface *surfaceText = TTF_RenderText_Solid(font, text.data(), {255, 255, 255});
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surfaceText);

@@ -73,9 +73,15 @@ private:
     bool validateTetriminoAction();
     void initTetriminoQueue();
     bool canFall();
+
+    void drawGameStatus(SDL_Renderer *renderer);
     void drawGhostMinos(SDL_Renderer *renderer);
     void drawQueueTetriminos(SDL_Renderer *renderer);
     void drawTetriminoHold(SDL_Renderer *renderer);
+
+    /// @brief Update variables such as level, score and line cleared and fall_speed
+    /// The game status are represented by these variables
+    /// @param nbLinesCleared
     void updateGameStatus(int nbLinesCleared);
 
     int lockDownTimer;

@@ -115,6 +115,8 @@ void TetrisMap::draw(SDL_Renderer *renderer)
     drawQueueTetriminos(renderer);
 
     drawTetriminoHold(renderer);
+
+    drawGameStatus(renderer);
 }
 
 void TetrisMap::tetriminoAction(TetriminoAction action)
@@ -289,6 +291,20 @@ void TetrisMap::tick()
         phase = GENERATION_PHASE;
     }
 }
+void TetrisMap::drawGameStatus(SDL_Renderer *renderer)
+{
+    int y = WINDOW_HEIGHT / 2;
+    text->drawStart(10, y, "SCORE", renderer);
+    text->drawEnd(TETRIS_MAP_INIT_X - 10, y, to_string(score), renderer);
+
+    y += 2 * TETRIS_MAP_MARGIN;
+    text->drawStart(10, y, "LEVEL", renderer);
+    text->drawEnd(TETRIS_MAP_INIT_X - 10, y, to_string(level), renderer);
+
+    y += 2 * TETRIS_MAP_MARGIN;
+    text->drawStart(10, y, "LINES", renderer);
+    text->drawEnd(TETRIS_MAP_INIT_X - 10, y, to_string(lines_cleared), renderer);
+}
 
 void TetrisMap::updateGameStatus(int nbLinesCleared)
 {
@@ -409,7 +425,7 @@ void TetrisMap::drawGhostMinos(SDL_Renderer *renderer)
 
 void TetrisMap::drawTetriminoHold(SDL_Renderer *renderer)
 {
-    text->drawCentered(0, TETRIS_MAP_MARGIN, TETRIS_MAP_INIT_X, TETRIS_MAP_MARGIN, "HOLD", renderer);
+    text->drawCenter(0, TETRIS_MAP_MARGIN, TETRIS_MAP_INIT_X, TETRIS_MAP_MARGIN, "HOLD", renderer);
     if (tetriminoHold)
     {
         int x = (TETRIS_MAP_INIT_X - (tetriminoHold->getSize() * TILE_SIZE)) / 2;
@@ -447,7 +463,7 @@ void TetrisMap::changeHold()
 
 void TetrisMap::drawQueueTetriminos(SDL_Renderer *renderer)
 {
-    text->drawCentered(
+    text->drawCenter(
         TETRIS_MAP_INIT_X + TETRIS_MAP_WIDTH,
         TETRIS_MAP_MARGIN,
         WINDOW_WIDTH,
