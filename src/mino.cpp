@@ -14,12 +14,12 @@ Mino::Mino(char val)
     m_value = val;
 }
 
-char& Mino::value()
+char &Mino::value()
 {
     return m_value;
 }
 
-const char& Mino::value() const
+const char &Mino::value() const
 {
     return m_value;
 }
@@ -35,9 +35,10 @@ const Color &Mino::color() const
 }
 
 void Mino::draw(SDL_Renderer *renderer, int x, int y)
-{      
-    if (m_value == 0) return;
-    
+{
+    if (m_value == 0)
+        return;
+
     SDL_Rect rect;
     rect.x = x + 5;
     rect.y = y + 5;
@@ -56,10 +57,12 @@ void Mino::draw(SDL_Renderer *renderer, int x, int y)
     SDL_RenderDrawRect(renderer, &rect);
 }
 
-void Mino::incrementAnimationProgress() {
-    animationProgress += 0.01;
+void Mino::incrementAnimationProgress()
+{
+    animationProgress += ANIMATION_PROGRESS;
 }
 
-bool Mino::animationEnded() {
+bool Mino::animationEnded()
+{
     return animationProgress >= 1;
 }

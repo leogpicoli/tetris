@@ -9,6 +9,8 @@
 
 TetrisMap::TetrisMap()
 {
+    text = new Text();
+
     for (int row = 0; row < MATRIX_HEIGHT + 6; row++)
     {
         for (int col = 0; col < MATRIX_WIDTH + 2 + 2; col++)
@@ -132,7 +134,8 @@ void TetrisMap::tetriminoAction(TetriminoAction action)
     {
         tetrimino->moveAction(action);
         bool val = validateTetriminoAction();
-        if (val && action == MOVE_DOWN) score += 1;
+        if (val && action == MOVE_DOWN)
+            score += 1;
     }
     else
     { // Rotate action
@@ -406,10 +409,14 @@ void TetrisMap::drawGhostMinos(SDL_Renderer *renderer)
 
 void TetrisMap::drawTetriminoHold(SDL_Renderer *renderer)
 {
+    text->drawCentered(0, TETRIS_MAP_MARGIN, TETRIS_MAP_INIT_X, TETRIS_MAP_MARGIN, "HOLD", renderer);
     if (tetriminoHold)
     {
         int x = (TETRIS_MAP_INIT_X - (tetriminoHold->getSize() * TILE_SIZE)) / 2;
-        int y = TETRIS_MAP_MARGIN;
+
+        // Adjust vertical if is Tetrimino I
+        int adjust_vertical = tetriminoHold->name() == 'I' ? 3 : 2;
+        int y = (3.5 * TETRIS_MAP_MARGIN - (adjust_vertical * TILE_SIZE) / 2);
         tetriminoHold->draw(renderer, x, y);
     }
 }
@@ -423,7 +430,6 @@ void TetrisMap::changeHold()
             Tetrimino *aux = tetrimino;
             tetrimino = tetriminoHold;
             tetriminoHold = aux;
-            tetriminoHold->reset();
             tetrimino->reset();
         }
         else
@@ -432,6 +438,8 @@ void TetrisMap::changeHold()
             generateNextTetrimino();
         }
 
+        tetriminoHold->reset();
+
         t_down_time = SDL_GetTicks();
         canChangeHold = false;
     }
@@ -439,11 +447,18 @@ void TetrisMap::changeHold()
 
 void TetrisMap::drawQueueTetriminos(SDL_Renderer *renderer)
 {
+    text->drawCentered(
+        TETRIS_MAP_INIT_X + TETRIS_MAP_WIDTH,
+        TETRIS_MAP_MARGIN,
+        WINDOW_WIDTH,
+        TETRIS_MAP_MARGIN, "NEXT", renderer);
     for (int i = 0; i < 4; i++)
     {
         Tetrimino *t = tetriminoQueue[i];
         int x = TETRIS_MAP_INIT_X + TETRIS_MAP_WIDTH + (TETRIS_MAP_INIT_X - (t->getSize() * TILE_SIZE)) / 2;
-        int y = TETRIS_MAP_MARGIN + TETRIMINO_QUEUE_MARGIN * i;
+        // Adjust vertical if is Tetrimino I
+        int adjust_vertical = t->name() == 'I' ? 3 : 2;
+        int y = 3.5 * TETRIS_MAP_MARGIN + TETRIMINO_QUEUE_MARGIN * i - (adjust_vertical * TILE_SIZE) / 2;
         t->draw(renderer, x, y);
     }
 }

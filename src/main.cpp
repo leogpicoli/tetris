@@ -10,15 +10,14 @@
 
 using namespace std;
 
-
 bool running;
 
 SDL_Renderer *renderer;
 SDL_Window *window;
-
 TetrisMap *tetrisMap;
 
-void render() {
+void render()
+{
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
@@ -26,39 +25,54 @@ void render() {
     SDL_RenderPresent(renderer);
 }
 
-void physics() {
+void physics()
+{
     tetrisMap->tick();
 }
 
-void input(){
+void input()
+{
     SDL_Event event;
-    while(SDL_PollEvent(&event)){
-        if(event.type == SDL_QUIT) running=false;
-        if (event.key.state == SDL_PRESSED) {
-            switch (event.key.keysym.sym) {
-                case SDLK_z: tetrisMap->tetriminoAction(ROTATE_LEFT);
+    while (SDL_PollEvent(&event))
+    {
+        if (event.type == SDL_QUIT)
+            running = false;
+        if (event.key.state == SDL_PRESSED)
+        {
+            switch (event.key.keysym.sym)
+            {
+            case SDLK_z:
+                tetrisMap->tetriminoAction(ROTATE_LEFT);
                 break;
-                case SDLK_x: tetrisMap->tetriminoAction(ROTATE_RIGHT);
+            case SDLK_x:
+                tetrisMap->tetriminoAction(ROTATE_RIGHT);
                 break;
-                case SDLK_c: tetrisMap->changeHold();
+            case SDLK_c:
+                tetrisMap->changeHold();
                 break;
-                case SDLK_LEFT: tetrisMap->tetriminoAction(MOVE_LEFT);
+            case SDLK_LEFT:
+                tetrisMap->tetriminoAction(MOVE_LEFT);
                 break;
-                case SDLK_RIGHT: tetrisMap->tetriminoAction(MOVE_RIGHT);
+            case SDLK_RIGHT:
+                tetrisMap->tetriminoAction(MOVE_RIGHT);
                 break;
-                case SDLK_UP: tetrisMap->tetriminoAction(ROTATE_RIGHT);
+            case SDLK_UP:
+                tetrisMap->tetriminoAction(ROTATE_RIGHT);
                 break;
-                case SDLK_DOWN: tetrisMap->tetriminoAction(MOVE_DOWN);
+            case SDLK_DOWN:
+                tetrisMap->tetriminoAction(MOVE_DOWN);
                 break;
-                case SDLK_SPACE: tetrisMap->tetriminoAction(DROP);
+            case SDLK_SPACE:
+                tetrisMap->tetriminoAction(DROP);
                 break;
             }
         }
     }
 }
 
-int main(int argc, char *argv[]){
-    srand((unsigned) time(NULL));
+int main(int argc, char *argv[])
+{
+    srand((unsigned)time(NULL));
 
     tetrisMap = new TetrisMap();
     running = true;
@@ -67,7 +81,8 @@ int main(int argc, char *argv[]){
     SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);
     SDL_SetWindowTitle(window, "Tetris");
 
-    while(running){
+    while (running)
+    {
         input();
         physics();
         render();

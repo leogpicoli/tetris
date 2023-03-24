@@ -14,10 +14,10 @@ enum Orientation
     N, // 0
     W, // 1
     S, // 2
-    E // 3
+    E  // 3
 };
 
-enum TetriminoAction 
+enum TetriminoAction
 {
     MOVE_LEFT,
     MOVE_RIGHT,
@@ -63,7 +63,7 @@ public:
 
     void draw(SDL_Renderer *renderer, int x, int y);
 
-    static Tetrimino* generateTetriminoFrom(char c);
+    static Tetrimino *generateTetriminoFrom(char c);
 
 protected:
     char t_name;
@@ -80,7 +80,6 @@ protected:
     // Returns rotation map
     virtual map<Orientation, map<int, Pos>> getRotationMap() = 0;
 };
-
 
 class TetriminoI : public Tetrimino
 {

@@ -9,7 +9,8 @@ Tetrimino::Tetrimino()
     reset();
 }
 
-void Tetrimino::reset() {
+void Tetrimino::reset()
+{
     m_orientation = N;
     m_pos = Pos(-2, MATRIX_WIDTH / 2 - 1);
     dead = false;
@@ -159,14 +160,15 @@ const char &Tetrimino::name() const
 
 void Tetrimino::draw(SDL_Renderer *renderer)
 {
-    if (dead) return;
+    if (dead)
+        return;
 
     array<Pos, 4> posMinos = getMinos();
 
     for (int i = 0; i < 4; i++)
     {
         Pos p = m_pos + posMinos[i];
-        Mino mino (t_name);
+        Mino mino(t_name);
         int x = p.col() * TILE_SIZE + TETRIS_MAP_INIT_X;
         int y = p.row() * TILE_SIZE + TETRIS_MAP_INIT_Y;
         mino.draw(renderer, x, y);
@@ -175,21 +177,23 @@ void Tetrimino::draw(SDL_Renderer *renderer)
 
 void Tetrimino::draw(SDL_Renderer *renderer, int x, int y)
 {
-    if (dead) return;
+    if (dead)
+        return;
 
     array<Pos, 4> posMinos = getMinos();
 
     for (int i = 0; i < 4; i++)
     {
         Pos p = posMinos[i];
-        Mino mino (t_name);
+        Mino mino(t_name);
         int mx = p.col() * TILE_SIZE + x;
         int my = p.row() * TILE_SIZE + y;
         mino.draw(renderer, mx, my);
     }
 }
 
-void Tetrimino::setDead() {
+void Tetrimino::setDead()
+{
     dead = true;
 }
 
@@ -503,31 +507,38 @@ array<Pos, 4> TetriminoZ::getMinos()
     return minos;
 }
 
-int TetriminoI::getSize() {
+int TetriminoI::getSize()
+{
     return 4;
 }
 
-int TetriminoJ::getSize() {
+int TetriminoJ::getSize()
+{
     return 3;
 }
 
-int TetriminoL::getSize() {
+int TetriminoL::getSize()
+{
     return 3;
 }
 
-int TetriminoO::getSize() {
+int TetriminoO::getSize()
+{
     return 2;
 }
 
-int TetriminoS::getSize() {
+int TetriminoS::getSize()
+{
     return 3;
 }
 
-int TetriminoZ::getSize() {
+int TetriminoZ::getSize()
+{
     return 3;
 }
 
-int TetriminoT::getSize() {
+int TetriminoT::getSize()
+{
     return 3;
 }
 

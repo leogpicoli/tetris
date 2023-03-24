@@ -3,12 +3,16 @@
 
 #include <pos.hpp>
 #include <tetrimino.hpp>
-#include <SDL2/SDL.h>
 #include <globals.hpp>
 #include <vector>
 #include <mino.hpp>
 
-enum TetrisPhase {
+#include "text.hpp"
+
+#include <SDL2/SDL.h>
+
+enum TetrisPhase
+{
     GENERATION_PHASE,
     FALLING_PHASE,
     LOCK_PHASE,
@@ -39,13 +43,16 @@ public:
     void changeHold();
 
     void copyRow(int row_source, int row_destiny);
+
 private:
     // Matrix Height + 2 (Skyline) + 2 (Top wall) + 2 (Bottom wall)
     // Matrix Width + 2 (Left wall) + 2 (Right wall)
     // char can be: O, I, T, L, J, S, Z, W (for wall)
     Mino m_matrix[MATRIX_HEIGHT + 2 + 2 + 2][MATRIX_WIDTH + 2 + 2];
-    
+
     Tetrimino *tetrimino;
+
+    Text *text;
 
     int lines_cleared = 0;
     int level = 0;
@@ -57,9 +64,9 @@ private:
 
     vector<int> rowsDestroyed;
     vector<char> virtualBag = {'I', 'O', 'T', 'L', 'J', 'Z', 'S'};
-    vector<Tetrimino*> tetriminoQueue;
+    vector<Tetrimino *> tetriminoQueue;
 
-    Tetrimino* tetriminoHold = nullptr;
+    Tetrimino *tetriminoHold = nullptr;
     bool canChangeHold = true;
 
     // Undoes tetriminoAction if it is colliding with something, returns true if it was validated.
@@ -70,7 +77,7 @@ private:
     void drawQueueTetriminos(SDL_Renderer *renderer);
     void drawTetriminoHold(SDL_Renderer *renderer);
     void updateGameStatus(int nbLinesCleared);
-    
+
     int lockDownTimer;
 };
 

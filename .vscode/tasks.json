@@ -12,7 +12,9 @@
                 "../include",
                 "-o",
                 "${workspaceFolder}/main.exe",
-                "-lSDL2"
+                "-lSDL2",
+                "-lSDL2_ttf",
+                "-ldl"
             ],
             "options": {
                 "cwd": "${fileDirname}"
