@@ -12,10 +12,12 @@
 #include <unistd.h>
 #include <menu.hpp>
 #include <menuRoom.hpp>
+#include <mutex>
 
 using namespace std;
 
 bool windowOpen;
+mutex mx;
 
 void render(TetrisMap *tetrisMap, SDL_Renderer *renderer)
 {
@@ -200,10 +202,14 @@ void runTetrisSingleplayer()
     SDL_Quit();
 }
 
-void createMenuRoom(MenuRoom *menuRoom)
+void runMenuRoom(MenuRoom *menuRoom)
 {
-    cout << "passou aqui" << endl;
-    menuRoom->runMainLoop();
+    while (windowOpen)
+    {
+        menuRoom->input();
+        menuRoom->render();
+        menuRoom->tick();
+    }
 }
 
 int main(int argc, char *argv[])
@@ -231,10 +237,7 @@ int main(int argc, char *argv[])
 
             if (client->is_connected())
             {
-                MenuRoom *menuRoom = new MenuRoom();
-                thread t1(createMenuRoom, menuRoom);
-
-                cout << "client aqui" << endl;
+                MenuRoom menuRoom;
                 char code;
                 client->recv(&code, 1);
                 if (code != CODE_ROOM_UNAVAILABLE)
@@ -244,20 +247,35 @@ int main(int argc, char *argv[])
                         char frac[3];
                         client->recv(frac, 3);
                         string playersInRoom(frac);
-                        menuRoom->setPlayers(frac);
-                        client->recv(&code, 1);
+                        menuRoom.setPlayers(frac);
+                        client->recv_async(&code, 1);
+                        while (!client->has_read_async())
+                        {
+                            menuRoom.input();
+                            menuRoom.render();
+                            menuRoom.tick();
+                        }
                     }
                     if (code == CODE_START_GAME)
                     {
-                        menuRoom->setStatus(MENU_ROOM_STARTING);
-                        t1.join();
+                        cout << "ta aqui" << endl;
+                        menuRoom.setStatus(MENU_ROOM_STARTING);
+                        cout << "ta aqui 2" << endl;
+                        menuRoom.render();
+                        cout << "ta aqui 3" << endl;
                     }
-
-                    sleep(1);
-                    runTetrisMultiplayer(client);
                 }
                 else
-                    menuRoom->setStatus(MENU_ROOM_UNAVAILABLE);
+                    menuRoom.setStatus(MENU_ROOM_UNAVAILABLE);
+
+                sleep(1);
+                // mx.lock();
+                menuRoom.close();
+                // mx.unlock();
+
+                sleep(1);
+
+                runTetrisMultiplayer(client);
 
                 client->disconnect();
             }

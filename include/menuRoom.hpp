@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include <text.hpp>
 #include <background.hpp>
+#include <mutex>
 
 #define MENU_ROOM_UNAVAILABLE 0
 #define MENU_ROOM_WAITING 1
@@ -18,7 +19,7 @@ public:
     void input();
     void render();
     void close();
-    void runMainLoop();
+    void tick();
     void setStatus(int new_status);
     void setPlayers(string newPlayers);
 
@@ -28,6 +29,7 @@ private:
     Background *bg;
     Text *textSmall, *textSmaller, *textBig;
 
+    mutex mux;
     int status; // 0 for room unav, 1 for waiting players, 2 for get ready message
     string playersInTheRoom;
     bool menuShowing;

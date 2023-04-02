@@ -16,13 +16,16 @@ class Client
 public:
     Client(const char *hostname, int port);
     int recv(char *msg, int msg_size);
+    void recv_async(char *msg, int msg_size);
     int send(char *msg, int msg_size);
+    bool has_read_async();
     bool is_connected();
     void disconnect();
 
 private:
     bool connected;
     int m_socket;
+    bool read_async;
     struct sockaddr_in serv_addr;
     struct hostent *server;
 };

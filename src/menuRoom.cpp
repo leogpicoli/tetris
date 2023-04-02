@@ -1,7 +1,5 @@
 #include <menuRoom.hpp>
 #include <globals.hpp>
-#include <thread>
-#include <unistd.h>
 #include <iostream>
 
 using namespace std;
@@ -20,22 +18,11 @@ MenuRoom::MenuRoom()
     textBig = new Text(60);
 
     bg = new Background(renderer);
-
-    std::thread mainLoop(&MenuRoom::runMainLoop, this);
-    mainLoop.detach();
 }
 
-void MenuRoom::runMainLoop()
+void MenuRoom::tick()
 {
-    while (menuShowing)
-    {
-        cout << "ta aqui" << endl;
-        input();
-        render();
-        bg->tick();
-    }
-
-    close();
+    bg->tick();
 }
 
 void MenuRoom::input()
@@ -74,14 +61,14 @@ void MenuRoom::render()
     {
         msg1 = "Room unavailable...";
         msg2 = "Wait a while and try again!";
-        msg3 = "";
+        msg3 = "-";
     }
 
     if (status == MENU_ROOM_STARTING)
     {
         msg1 = "Get ready!";
         msg2 = "Game will start soon...";
-        msg3 = "";
+        msg3 = "-";
     }
 
     string backspace = "Press backspace to leave room";
@@ -113,14 +100,6 @@ void MenuRoom::close()
 void MenuRoom::setStatus(int newStatus)
 {
     status = newStatus;
-    if (status == MENU_ROOM_STARTING)
-    {
-        cout << "entrou aqui" << endl;
-        sleep(2);
-        cout << "entrou aqui 1" << endl;
-        menuShowing = false;
-        cout << "entrou aqui 2" << endl;
-    }
 }
 
 void MenuRoom::setPlayers(string newPlayers)

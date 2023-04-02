@@ -1,4 +1,8 @@
 #include "client.hpp"
+#include <iostream>
+#include <thread>
+
+using namespace std;
 
 Client::Client(const char *hostname, int port)
 {
@@ -39,7 +43,16 @@ bool Client::is_connected()
 // Returns 0 (EOF), -1 (Error) or 1 (Read correctly) and value is in code;
 int Client::recv(char *msg, int msg_size)
 {
-    return read(m_socket, msg, msg_size);
+    int ret = read(m_socket, msg, msg_size);
+    read_async = true;
+    return ret;
+}
+
+void Client::recv_async(char *msg, int msg_size)
+{
+    read_async = false;
+    thread t1(&Client::recv, this, msg, msg_size);
+    t1.detach();
 }
 
 int Client::send(char *msg, int msg_size)
@@ -53,4 +66,9 @@ void Client::disconnect()
         close(m_socket);
 
     connected = false;
+}
+
+bool Client::has_read_async()
+{
+    return read_async;
 }
