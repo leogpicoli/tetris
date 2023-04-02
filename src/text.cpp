@@ -1,14 +1,15 @@
 #include "text.hpp"
 #include <iostream>
 
-Text::Text()
+Text::Text(int fontSize)
 {
     if (TTF_Init() == -1)
+    {
         std::cout << "Could not initialize SDL2 TTF, error: " << TTF_GetError() << std::endl;
-    else
-        std::cout << "TTF font ready to go!" << std::endl;
+        exit(1);
+    }
 
-    this->font = TTF_OpenFont("./fonts/RobotoMono-Regular.ttf", 24);
+    this->font = TTF_OpenFont("./fonts/RobotoMono-Regular.ttf", fontSize);
 
     if (this->font == nullptr)
     {

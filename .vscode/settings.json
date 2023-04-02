@@ -51,6 +51,10 @@
         "concepts": "cpp",
         "numbers": "cpp",
         "ctime": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "condition_variable": "cpp",
+        "ratio": "cpp",
+        "mutex": "cpp",
+        "thread": "cpp"
     }
 }

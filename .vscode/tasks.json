@@ -14,7 +14,8 @@
                 "${workspaceFolder}/main.exe",
                 "-lSDL2",
                 "-lSDL2_ttf",
-                "-ldl"
+                "-ldl",
+                "-pthread"
             ],
             "options": {
                 "cwd": "${fileDirname}"

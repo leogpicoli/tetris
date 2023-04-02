@@ -11,7 +11,7 @@ using namespace std;
 class Text
 {
 public:
-    Text();
+    Text(int fontSize);
     ~Text();
     void drawStart(int x, int y, string s, SDL_Renderer *renderer);
     void drawCenter(int startX, int startY, int endX, int endY, string s, SDL_Renderer *renderer);

@@ -8,6 +8,7 @@
 #define PURPLE Color(0x800080FF)
 #define CYAN Color(0x00FFFFFF)
 #define ORANGE Color(0xFF7F00FF)
+#define GREY Color(0x808080FF);
 #define BLACK Color(0x000000FF)
 #define WHITE_TRANSPARENT Color(0xFFFFFF30);
 
@@ -27,6 +28,7 @@ public:
     void set(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha);
 
     static Color fromTetrimino(char c);
+
 private:
     uint8_t m_alpha;
     uint8_t m_red;

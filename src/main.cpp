@@ -5,18 +5,19 @@
 #include <pos.hpp>
 #include <tetrisMap.hpp>
 #include <tetrimino.hpp>
+#include <client.hpp>
 #include <ctime>
 #include <cstdlib>
+#include <thread>
+#include <unistd.h>
+#include <menu.hpp>
+#include <menuRoom.hpp>
 
 using namespace std;
 
-bool running;
+bool windowOpen;
 
-SDL_Renderer *renderer;
-SDL_Window *window;
-TetrisMap *tetrisMap;
-
-void render()
+void render(TetrisMap *tetrisMap, SDL_Renderer *renderer)
 {
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -25,18 +26,18 @@ void render()
     SDL_RenderPresent(renderer);
 }
 
-void physics()
+void physics(TetrisMap *tetrisMap)
 {
     tetrisMap->tick();
 }
 
-void input()
+void input(TetrisMap *tetrisMap)
 {
     SDL_Event event;
     while (SDL_PollEvent(&event))
     {
         if (event.type == SDL_QUIT)
-            running = false;
+            windowOpen = false;
         if (event.key.state == SDL_PRESSED)
         {
             switch (event.key.keysym.sym)
@@ -70,26 +71,198 @@ void input()
     }
 }
 
-int main(int argc, char *argv[])
+// Responsable for getting enemy map from server and to send our map to the server
+void handleClient(Client *client, TetrisMap *tetrisMap)
 {
-    srand((unsigned)time(NULL));
+    bool multiplayerGameOver = false;
+    int mapSize = MATRIX_WIDTH * MATRIX_HEIGHT;
+    while (!tetrisMap->isGameOver() && !multiplayerGameOver && windowOpen)
+    {
+        usleep(50000); // Sleep for 50ms
 
-    tetrisMap = new TetrisMap();
-    running = true;
+        /* Send map */
+        char code = CODE_PLAYER_MAP;
+        char my_map[mapSize];
+        tetrisMap->getMap(my_map);
+        client->send(&code, 1);
+        client->send(my_map, mapSize);
+
+        /* Send buffer lines*/
+        int bufferLines = tetrisMap->getBufferLines();
+        if (bufferLines < 0)
+        {
+            char buf = (char)(-bufferLines);
+            code = CODE_PLAYER_LINES;
+            client->send(&code, 1);
+            client->send(&buf, 1);
+            tetrisMap->resetBufferLines();
+        }
+
+        client->recv(&code, 1);
+        if (code == CODE_PLAYER_MAP)
+            client->recv(tetrisMap->enemyMap(), mapSize);
+        else if (code == CODE_PLAYER_LINES)
+        {
+            char buf = 0;
+            client->recv(&buf, 1);
+            bufferLines = (int)buf;
+            tetrisMap->addBufferLines(bufferLines);
+        }
+        else if (code == CODE_GAME_OVER)
+            multiplayerGameOver = true;
+    }
+
+    if (multiplayerGameOver)
+        cout << "You won, congratulations!" << endl;
+    else if (tetrisMap->isGameOver())
+    {
+        char code = CODE_PLAYER_DEAD;
+        client->send(&code, 1);
+        cout << "You lost, keep trying and one day you will be a Tetris Pro!" << endl;
+    }
+
+    // While to keep watchin others
+    while (!multiplayerGameOver && windowOpen)
+    {
+        usleep(50000); // Sleep for 50ms
+        char code = CODE_PLAYER_MAP;
+        client->recv(&code, 1);
+        if (code == CODE_PLAYER_MAP)
+            client->recv(tetrisMap->enemyMap(), mapSize);
+        else if (code == CODE_GAME_OVER)
+            multiplayerGameOver = true;
+    }
+
+    windowOpen = false;
+}
+
+void showFinalGameStatus(TetrisMap *tetrisMap)
+{
+    int score, linesCleared, level;
+    tetrisMap->getGameStatus(&score, &linesCleared, &level);
+    std::cout << "Game informations:" << std::endl;
+    std::cout << "Final score: " << score << std::endl;
+    std::cout << "Final level: " << level << std::endl;
+    std::cout << "Lines cleared: " << linesCleared << std::endl;
+}
+
+void runTetrisMultiplayer(Client *client)
+{
+    TetrisMap *tetrisMap = new TetrisMap(true);
+    SDL_Renderer *renderer;
+    SDL_Window *window;
 
     SDL_Init(SDL_INIT_EVERYTHING);
-    SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);
+    SDL_CreateWindowAndRenderer(WINDOW_WIDTH_MULTIPLAYER, WINDOW_HEIGHT, 0, &window, &renderer);
     SDL_SetWindowTitle(window, "Tetris");
+    windowOpen = true;
 
-    while (running)
+    thread t_client(handleClient, client, tetrisMap);
+
+    while (windowOpen)
     {
-        input();
-        physics();
-        render();
+        input(tetrisMap);
+        physics(tetrisMap);
+        render(tetrisMap, renderer);
     }
+
+    t_client.join();
+
+    showFinalGameStatus(tetrisMap);
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+}
+
+void runTetrisSingleplayer()
+{
+    TetrisMap *tetrisMap = new TetrisMap(false);
+    SDL_Renderer *renderer;
+    SDL_Window *window;
+
+    SDL_Init(SDL_INIT_EVERYTHING);
+    SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);
+    SDL_SetWindowTitle(window, "Tetris");
+    windowOpen = true;
+
+    while (!tetrisMap->isGameOver() && windowOpen)
+    {
+        input(tetrisMap);
+        physics(tetrisMap);
+        render(tetrisMap, renderer);
+    }
+
+    showFinalGameStatus(tetrisMap);
+
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+}
+
+void createMenuRoom(MenuRoom *menuRoom)
+{
+    cout << "passou aqui" << endl;
+    menuRoom->runMainLoop();
+}
+
+int main(int argc, char *argv[])
+{
+    srand((unsigned)time(NULL));
+
+    int option = 0;
+    while (option != 2)
+    {
+        Menu menu;
+
+        if (!menu.hasChosen())
+            break;
+
+        option = menu.getChoice();
+
+        /* Tetris singleplayer mode! */
+        if (option == 0)
+            runTetrisSingleplayer();
+
+        /* Tetris multiplayer option */
+        if (option == 1)
+        {
+            Client *client = new Client("localhost", 8080);
+
+            if (client->is_connected())
+            {
+                MenuRoom *menuRoom = new MenuRoom();
+                thread t1(createMenuRoom, menuRoom);
+
+                cout << "client aqui" << endl;
+                char code;
+                client->recv(&code, 1);
+                if (code != CODE_ROOM_UNAVAILABLE)
+                {
+                    while (code == CODE_ROOM_SIZE)
+                    {
+                        char frac[3];
+                        client->recv(frac, 3);
+                        string playersInRoom(frac);
+                        menuRoom->setPlayers(frac);
+                        client->recv(&code, 1);
+                    }
+                    if (code == CODE_START_GAME)
+                    {
+                        menuRoom->setStatus(MENU_ROOM_STARTING);
+                        t1.join();
+                    }
+
+                    sleep(1);
+                    runTetrisMultiplayer(client);
+                }
+                else
+                    menuRoom->setStatus(MENU_ROOM_UNAVAILABLE);
+
+                client->disconnect();
+            }
+        }
+    }
+
     return 0;
 }

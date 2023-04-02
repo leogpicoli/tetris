@@ -52,7 +52,8 @@ void Color::set(uint8_t red, uint8_t blue, uint8_t green, uint8_t alpha)
     m_alpha = alpha;
 }
 
-void Color::setAlpha(uint8_t alpha) {
+void Color::setAlpha(uint8_t alpha)
+{
     m_alpha = alpha;
 }
 
@@ -83,6 +84,9 @@ Color Color::fromTetrimino(char c)
         break;
     case 'G':
         return WHITE_TRANSPARENT;
+        break;
+    case 'W':
+        return GREY;
         break;
     default:
         return BLACK;
