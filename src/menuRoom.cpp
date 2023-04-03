@@ -1,6 +1,8 @@
 #include <menuRoom.hpp>
 #include <globals.hpp>
 #include <iostream>
+#include <thread>
+#include <unistd.h>
 
 using namespace std;
 
@@ -20,6 +22,23 @@ MenuRoom::MenuRoom()
     bg = new Background(renderer);
 }
 
+void MenuRoom::runMainLoop()
+{
+    while (menuShowing)
+    {
+        input();
+        render();
+        tick();
+    }
+
+    if (status == MENU_ROOM_STARTING)
+    {
+        render();
+        sleep(2);
+    }
+    close();
+}
+
 void MenuRoom::tick()
 {
     bg->tick();
@@ -34,12 +53,8 @@ void MenuRoom::input()
             menuShowing = false;
         if (event.key.state == SDL_PRESSED)
         {
-            switch (event.key.keysym.sym)
-            {
-            case SDLK_BACKSPACE:
+            if (event.key.keysym.sym == SDLK_BACKSPACE)
                 menuShowing = false;
-                break;
-            }
         }
     }
 }
@@ -100,6 +115,13 @@ void MenuRoom::close()
 void MenuRoom::setStatus(int newStatus)
 {
     status = newStatus;
+    if (status == MENU_ROOM_STARTING)
+        menuShowing = false;
+}
+
+int MenuRoom::getStatus()
+{
+    return status;
 }
 
 void MenuRoom::setPlayers(string newPlayers)

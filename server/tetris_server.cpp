@@ -154,6 +154,10 @@ void TetrisServer::handle(Player *player)
             if (players_alive == 1)
                 broadcast(CODE_GAME_OVER, NULL, 0);
         }
+        else if (code == CODE_PLAYER_DISCONNECT)
+        {
+            connected = false;
+        }
 
         connected &= (res > 0);
     }

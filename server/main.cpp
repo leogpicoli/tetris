@@ -2,6 +2,6 @@
 
 int main()
 {
-    TetrisServer ts(2, 8080);
+    TetrisServer ts(3, 8080);
     return 0;
 }

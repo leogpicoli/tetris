@@ -20,7 +20,9 @@ public:
     void render();
     void close();
     void tick();
+    void runMainLoop();
     void setStatus(int new_status);
+    int getStatus();
     void setPlayers(string newPlayers);
 
 private:

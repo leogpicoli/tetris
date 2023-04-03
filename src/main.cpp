@@ -202,14 +202,27 @@ void runTetrisSingleplayer()
     SDL_Quit();
 }
 
-void runMenuRoom(MenuRoom *menuRoom)
+void handleClientRoom(MenuRoom *menuRoom, Client *client)
 {
-    while (windowOpen)
+    char code;
+    client->recv(&code, 1);
+    if (code != CODE_ROOM_UNAVAILABLE)
     {
-        menuRoom->input();
-        menuRoom->render();
-        menuRoom->tick();
+        while (code == CODE_ROOM_SIZE)
+        {
+            char frac[3];
+            client->recv(frac, 3);
+            string playersInRoom(frac);
+            menuRoom->setPlayers(frac);
+            client->recv(&code, 1);
+        }
+        if (code == CODE_START_GAME)
+        {
+            menuRoom->setStatus(MENU_ROOM_STARTING);
+        }
     }
+    else
+        menuRoom->setStatus(MENU_ROOM_UNAVAILABLE);
 }
 
 int main(int argc, char *argv[])
@@ -237,47 +250,23 @@ int main(int argc, char *argv[])
 
             if (client->is_connected())
             {
-                MenuRoom menuRoom;
-                char code;
-                client->recv(&code, 1);
-                if (code != CODE_ROOM_UNAVAILABLE)
+                MenuRoom *menuRoom = new MenuRoom();
+
+                thread t1(handleClientRoom, menuRoom, client);
+                t1.detach();
+                menuRoom->runMainLoop();
+
+                if (menuRoom->getStatus() == MENU_ROOM_STARTING)
                 {
-                    while (code == CODE_ROOM_SIZE)
-                    {
-                        char frac[3];
-                        client->recv(frac, 3);
-                        string playersInRoom(frac);
-                        menuRoom.setPlayers(frac);
-                        client->recv_async(&code, 1);
-                        while (!client->has_read_async())
-                        {
-                            menuRoom.input();
-                            menuRoom.render();
-                            menuRoom.tick();
-                        }
-                    }
-                    if (code == CODE_START_GAME)
-                    {
-                        cout << "ta aqui" << endl;
-                        menuRoom.setStatus(MENU_ROOM_STARTING);
-                        cout << "ta aqui 2" << endl;
-                        menuRoom.render();
-                        cout << "ta aqui 3" << endl;
-                    }
+                    runTetrisMultiplayer(client);
+                    client->disconnect();
                 }
                 else
-                    menuRoom.setStatus(MENU_ROOM_UNAVAILABLE);
-
-                sleep(1);
-                // mx.lock();
-                menuRoom.close();
-                // mx.unlock();
-
-                sleep(1);
-
-                runTetrisMultiplayer(client);
-
-                client->disconnect();
+                {
+                    char code = CODE_PLAYER_DISCONNECT;
+                    client->send(&code, 1);
+                    // client->disconnect();
+                }
             }
         }
     }
