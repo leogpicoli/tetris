@@ -31,6 +31,7 @@
 #define ANIMATION_PROGRESS 0.1
 
 /* For multiplayer */
+#define SERVER_PORT 8080
 #define CODE_ROOM_UNAVAILABLE 0
 #define CODE_ROOM_SIZE 1
 #define CODE_START_GAME 2

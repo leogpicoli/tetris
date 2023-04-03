@@ -13,6 +13,7 @@
 #include <menu.hpp>
 #include <menuRoom.hpp>
 #include <mutex>
+#include "results.hpp"
 
 using namespace std;
 
@@ -138,16 +139,6 @@ void handleClient(Client *client, TetrisMap *tetrisMap)
     windowOpen = false;
 }
 
-void showFinalGameStatus(TetrisMap *tetrisMap)
-{
-    int score, linesCleared, level;
-    tetrisMap->getGameStatus(&score, &linesCleared, &level);
-    std::cout << "Game informations:" << std::endl;
-    std::cout << "Final score: " << score << std::endl;
-    std::cout << "Final level: " << level << std::endl;
-    std::cout << "Lines cleared: " << linesCleared << std::endl;
-}
-
 void runTetrisMultiplayer(Client *client)
 {
     TetrisMap *tetrisMap = new TetrisMap(true);
@@ -170,11 +161,13 @@ void runTetrisMultiplayer(Client *client)
 
     t_client.join();
 
-    showFinalGameStatus(tetrisMap);
-
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+
+    int score, linesCleared, level;
+    tetrisMap->getGameStatus(&score, &linesCleared, &level);
+    Results results(score, linesCleared, !tetrisMap->isGameOver());
 }
 
 void runTetrisSingleplayer()
@@ -195,11 +188,13 @@ void runTetrisSingleplayer()
         render(tetrisMap, renderer);
     }
 
-    showFinalGameStatus(tetrisMap);
-
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+
+    int score, linesCleared, level;
+    tetrisMap->getGameStatus(&score, &linesCleared, &level);
+    Results results(score, linesCleared, !tetrisMap->isGameOver());
 }
 
 void handleClientRoom(MenuRoom *menuRoom, Client *client)
@@ -228,7 +223,7 @@ void handleClientRoom(MenuRoom *menuRoom, Client *client)
 int main(int argc, char *argv[])
 {
     srand((unsigned)time(NULL));
-
+    const char *hostname = argv[1];
     int option = 0;
     while (option != 2)
     {
@@ -246,7 +241,7 @@ int main(int argc, char *argv[])
         /* Tetris multiplayer option */
         if (option == 1)
         {
-            Client *client = new Client("localhost", 8080);
+            Client *client = new Client(hostname, SERVER_PORT);
 
             if (client->is_connected())
             {

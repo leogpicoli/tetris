@@ -1,7 +1,10 @@
 #include "tetris_server.hpp"
+#include "globals.hpp"
+#include <string>
 
-int main()
+int main(int argc, char *argv[])
 {
-    TetrisServer ts(3, 8080);
+    int numPlayers = std::stoi(argv[1]);
+    TetrisServer ts(numPlayers, SERVER_PORT);
     return 0;
 }
